@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>link</title>
+  <script src="./js/pTopo.js"></script>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+  canvas.width = document.documentElement.clientWidth - 10
+  canvas.height = document.documentElement.clientHeight - 10
+  
+  window.addEventListener('resize', function () {
+    canvas.width = document.documentElement.clientWidth - 10
+    canvas.height = document.documentElement.clientHeight - 10
+  })
+
+  const stage = new PTopo.Stage(canvas)
+  const scene = new PTopo.Scene(stage)
+  scene.background = './img/bg.jpg'
+
+  // node
+  function newNode(x, y, w, h, text) {
+    const node = new PTopo.Node(text)
+
+    node.setLocation(x, y)
+    if (w || h) node.setSize(w, h)
+    scene.add(node)
+
+    return node
+  }
+
+  // link
+  function newLink(nodeA, nodeZ, text, dashedPattern) {
+    const link = new PTopo.Link(nodeA, nodeZ, text)
+
+    link.lineWidth = 3
+    link.dashedPattern = dashedPattern
+    link.bundleOffset = 60
+    link.bundleGap = 20
+    link.textOffsetY = 3
+    link.strokeColor = '0,200,255'
+    scene.add(link)
+
+    return link
+  }
+
+  // foldLink
+  function newFoldLink(nodeA, nodeZ, text, direction, dashedPattern) {
+    const link = new PTopo.FoldLink(nodeA, nodeZ, text)
+
+    link.direction = direction || 'horizontal'
+    link.arrowsRadius = 15
+    link.lineWidth = 3
+    link.bundleGap = 20
+    link.bundleOffset = 60
+    link.textOffsetY = 3
+    link.strokeColor = PTopo.util.randomColor()
+    link.dashedPattern = dashedPattern
+    scene.add(link)
+
+    return link
+  }
+
+  function newFlexionalLink(nodeA, nodeZ, text, direction, dashedPattern) {
+    const link = new PTopo.FlexionalLink(nodeA, nodeZ, text)
+
+    link.direction = direction || 'horizontal'
+    link.arrowsRadius = 10
+    link.lineWidth = 3
+    link.offsetGap = 35
+    link.bundleGap = 15
+    link.textOffsetY = 10
+    link.strokeColor = '0,250,0'
+    link.dashedPattern = dashedPattern
+    scene.add(link)
+
+    return link
+  }
+
+  function newCurveLink(nodeA, nodeZ, text) {
+    const link = new PTopo.CurveLink(nodeA, nodeZ, text)
+
+    link.lineWidth = 3
+    scene.add(link)
+
+    return link
+  }
+
+  const from1 = newNode(100, 60, 30, 30)
+  const to1 = newNode(300, 60, 30, 30)
+  newLink(from1, to1, 'Link')
+
+  const from2 = newNode(100, 120, 30, 30)
+  const to2 = newNode(300, 120, 30, 30)
+  const link2 = newLink(from2, to2, 'Arrow', 5)
+  link2.arrowsRadius = 10
+
+  const from3 = newNode(100, 200, 30, 30)
+  const to3 = newNode(200, 300, 30, 30)
+  newFoldLink(from3, to3, 'FoldLink')
+  newFoldLink(to3, from3, 'FoldLink')
+
+  const from4 = newNode(100, 300, 30, 30)
+  const to4 = newNode(200, 400, 30, 30)
+  newFoldLink(from4, to4, 'FoldLink', 'vertical')
+
+  const from5 = newNode(450, 250, 30, 30)
+  const to5 = newNode(400, 100, 30, 30)
+  newFlexionalLink(from5, to5, 'FlexLink1')
+
+  const from6 = newNode(600, 100, 30, 30)
+  const to6 = newNode(650, 200, 30, 30)
+  newFlexionalLink(from6, to6, 'f', 'vertical', 2)
+
+  const from7 = newNode(450, 400, 30, 30);
+  newLink(from7, from7, 'loop');
+
+  const from8 = newNode(550, 400, 30, 30);
+  const to8 = newNode(650, 300, 30, 30);
+  newCurveLink(from8, to8, 'curve')
+
+  stage.add(scene)
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

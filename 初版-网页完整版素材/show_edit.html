@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>online edit</title>
+  <script src="./js/pTopo.js"></script>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+  canvas.width = document.documentElement.clientWidth - 10
+  canvas.height = document.documentElement.clientHeight - 10
+
+  window.addEventListener('resize', function () {
+    canvas.width = document.documentElement.clientWidth - 10
+    canvas.height = document.documentElement.clientHeight - 10
+  })
+
+  const stage = new PTopo.Stage(canvas)
+  const scene = new PTopo.Scene(stage)
+
+  scene.background = './img/grey_bg.jpg'
+
+  //clear scene
+  function clear_scene(){
+    scene.clear()
+    stage.clear()
+  }
+  // node
+  function newNode(x, y, w, h, text) {
+    const node = new PTopo.Node(text)
+    node.setLocation(x, y)
+    if (w || h) node.setSize(w, h)
+    node.setImage("img/y.png")
+    scene.add(node)
+    return node
+  }
+
+  // link
+  function newLink(nodeA, nodeZ, text, dashedPattern) {
+    const link = new PTopo.Link(nodeA, nodeZ, text)
+
+    link.lineWidth = 3
+    link.dashedPattern = dashedPattern
+    link.bundleOffset = 60
+    link.bundleGap = 20
+    link.textOffsetY = 3
+    link.strokeColor = '0,200,255'
+    scene.add(link)
+
+    return link
+  }
+
+  const msgNode = new PTopo.TextNode("箭头创建/粗细/结点拖拽/文字展示")
+  msgNode.zIndex++
+  msgNode.setBound(250, 50)
+  msgNode.setLocation(1080, 50)
+  scene.add(msgNode)
+
+  //add download button
+  const download_circleNode = new PTopo.CircleNode('Download json')
+
+  download_circleNode.radius = 50
+  download_circleNode.alpha = .7
+  download_circleNode.fillColor = '0,0,255'
+  download_circleNode.setLocation(1080, 85)
+  download_circleNode.textPosition = 'Middle_Center'
+  
+  scene.add(download_circleNode)
+  //add upload button
+  const upload_circleNode = new PTopo.CircleNode('Upload json')
+
+  upload_circleNode.radius = 50
+  upload_circleNode.alpha = .7
+  upload_circleNode.fillColor = '0,0,255'
+  upload_circleNode.setLocation(1080, 200)
+  upload_circleNode.textPosition = 'Middle_Center'
+  scene.add(upload_circleNode)
+
+  for (let i = 0; i < 5; i++) {
+    const node = new PTopo.Node('Node_' + i)
+    node.setLocation(Math.random() * 600, Math.random() * 400)
+    node.setSize(80, 80)
+    node.setImage("img/node.png")
+    scene.add(node)
+  }
+
+  //edit
+  let beginNode = null
+  const tempNodeA = new PTopo.Node('tempA')
+  tempNodeA.setSize(1, 1)
+
+  const tempNodeZ = new PTopo.Node('tempZ')
+  tempNodeZ.setSize(1, 1)
+
+  const link = new PTopo.Link(tempNodeA, tempNodeZ)
+
+  const from2 = newNode(100, 120, 50, 50)
+  const to2 = newNode(300, 120, 50, 50)
+  const link2 = newLink(from2, to2, 'Arrow', 5)
+  link2.arrowsRadius = 10
+
+  scene.mouseup(function (e) {
+    if (e.button === 2) {
+      scene.remove(link)
+      return
+    }
+    
+    if(e.target===download_circleNode){
+      scene.remove(link)
+      return
+    }
+    if(e.target===upload_circleNode){
+      alert(1)
+      scene.remove(link)
+      clear_scene()
+      return
+    }
+
+    if (e.target && e.target instanceof PTopo.Node) {
+      if (!beginNode) {
+        beginNode = e.target
+        scene.add(link)
+        tempNodeA.setLocation(e.x, e.y)
+        tempNodeZ.setLocation(e.x, e.y)
+      } else if (beginNode !== e.target) {
+        let endNode = e.target
+        const l = new PTopo.Link(beginNode, endNode, 'add')
+        l.arrowsRadius = 20
+        l.lineWidth = 1 + Math.random() * 10
+        scene.add(l)
+        beginNode = null
+        scene.remove(link)
+      } else {
+        beginNode = null
+      }
+    } else {
+      scene.remove(link)
+      
+    }
+  })
+
+  scene.mousedown(function (e) {
+
+    if (!e.target || e.target === beginNode || e.target === link) {
+      scene.remove(link)
+    }
+  })
+  scene.mousemove(function (e) {
+    tempNodeZ.setLocation(e.x, e.y)
+  })
+
+</script>
+</body>
+</html>

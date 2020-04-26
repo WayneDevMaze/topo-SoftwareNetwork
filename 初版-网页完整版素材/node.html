@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>node</title>
+  <script src="./js/pTopo.js"></script>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+  canvas.width = document.documentElement.clientWidth - 10
+  canvas.height = document.documentElement.clientHeight - 10
+
+  window.addEventListener('resize', function () {
+    canvas.width = document.documentElement.clientWidth - 10
+    canvas.height = document.documentElement.clientHeight - 10
+  })
+  const stage = new PTopo.Stage(canvas)
+  const scene = new PTopo.Scene(stage)
+  scene.background = './img/bg.jpg'
+
+  function newNode(x, y, w, h, text) {
+    const node = new PTopo.Node(text)
+
+    node.setLocation(x, y)
+    if (w || h) node.setSize(w, h)
+    scene.add(node)
+
+    return node
+  }
+
+  const defaultNode = newNode(180, 100, 100, 60, 'microsoft yahei')
+
+  defaultNode.textPosition = 'Middle_Center'
+  defaultNode.textOffsetY = 8
+  defaultNode.font = '14px Microsoft-Yahei'
+  defaultNode.borderRadius = 5
+  defaultNode.borderWidth = 2
+  defaultNode.borderColor = '255,255,255'
+  defaultNode.alpha = .7
+
+  const vueNode = newNode(320, 80, undefined, undefined, 'vue.png')
+
+  vueNode.alpha = .7
+  vueNode.setImage('./img/logo.png', true)
+  vueNode.showSelected = false
+
+  const textNode = new PTopo.TextNode('This is a text node.')
+
+  textNode.font = 'bold 16px Microsoft-Yahei'
+  textNode.setLocation(317, 250)
+  scene.add(textNode)
+
+  const linkNode = new PTopo.LinkNode('hyper-link: https://github.com/pointworld')
+
+  linkNode.href = 'https://github.com/pointworld'
+  linkNode.target = '_blank'
+  linkNode.font = 'italic bold 16px Microsoft-Yahei'
+  linkNode.visitedColor = '0,0,255'
+  linkNode.shadowOffsetX = 5
+  linkNode.shadowOffsetY = 16
+  linkNode.setLocation(250, 360)
+  scene.add(linkNode)
+
+  const peopleNode = new PTopo.Node('people')
+
+  peopleNode.setBound(500, 210, 64, 64)
+  peopleNode.setImage('./img/logo.png')
+  scene.add(peopleNode)
+
+  const circleNode = new PTopo.CircleNode('circle node')
+
+  circleNode.radius = 24
+  circleNode.alpha = .7
+  circleNode.fillColor = '0,0,255'
+  circleNode.setLocation(508, 100)
+  circleNode.textPosition = 'Middle_Center'
+  scene.add(circleNode)
+
+  const selfDefinedNode = newNode(200, 210, 60, 60, 'self-defined node')
+
+  selfDefinedNode.percent = .8
+  selfDefinedNode.beginDegree = 0
+  selfDefinedNode.paint = function (ctx) {
+    ctx.beginPath()
+    ctx.moveTo(0, 0)
+    ctx.fillStyle = 'rgba(0,255,0,' + this.alpha + ')'
+    ctx.arc(0, 0, this.width / 2, this.beginDegree, this.beginDegree + 2 * Math.PI * this.percent)
+    ctx.fill()
+    ctx.closePath()
+
+    ctx.save()
+    ctx.beginPath()
+    ctx.fillStyle = 'rgba(255,255,0,' + this.alpha + ')'
+    ctx.moveTo(0, 0)
+    ctx.arc(0, 0, this.width / 2 - 10, this.beginDegree, this.beginDegree + 2 * Math.PI)
+    ctx.fill()
+    ctx.closePath()
+    ctx.restore()
+
+    this.paintText(ctx)
+  }
+
+  scene.add(selfDefinedNode)
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

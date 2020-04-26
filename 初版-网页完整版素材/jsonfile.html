@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>软件管理拓扑图构建工具</title>
+    <script src="./js/pTopo.js"></script>
+    <!-- css of 3rd party  -->
+    <link href="static/layui-2.3.0/css/layui.css" type="text/css" rel="stylesheet"/>
+    <link href="static/font-awesome-4.7.0/css/font-awesome.min.css" type="text/css" rel="stylesheet">
+    <!-- css of this project  -->
+    <link href="static/jtopo/css/jtopo-editor.css" type="text/css" rel="stylesheet">
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header layui-bg-gray" id="topbar">
+            <div class="layui-logo">软件管理网络构建工具</div>
+            <!-- 顶部工具栏 -->
+            <div class="layui-nav layui-layout-right">
+                <i class="fa fa-floppy-o toolbar-icon" aria-hidden="true" title="保存"
+                   onClick="SaveData()"></i>
+                <i class="fa fa-trash-o toolbar-icon" aria-hidden="true" title="清空"
+                   onClick="UpdateCanvas()"></i>
+                <i class="fa fa-pencil-square-o toolbar-icon" aria-hidden="true"  id="uploadJson" title="加载JSON"
+                   onClick="EditData()"></i>
+                <i class="fa fa-clipboard toolbar-icon" aria-hidden="true" id="uploadExcel"  title="加载Excel"
+                   onClick="Excel()"></i>
+            </div>
+        </div>
+    
+        <div class="container">
+            <div class="layui-row">
+                <div class="layui-col-md2" id="sidebar">
+                    <div class="layui-side-scroll">
+                        <div class="layui-collapse" lay-accordion>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">连线</h2>
+                                <div class="layui-colla-content layui-show">
+                                    <table width="100%">
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <div topo-div-type="topo-link" topo-linktype="none" draggable="false"
+                                                     onclick="sleep()">
+                                                    <img class="link-icon-style" id="link-none"
+                                                         src="static/jtopo/img/line_none.png"/>
+                                                    <br><span>选择状态(拖拽)</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                         <tr>
+                                            <td width="100%" align="center">
+                                                <div topo-div-type="topo-link" topo-linktype="line"
+                                                     draggable="false"
+                                                     onclick="linkLine()">
+                                                    <img class="link-icon-style" id="link-line"
+                                                         src="static/jtopo/img/line.png"/>
+                                                    <br><span>箭头连线(鼠标左键选择)</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <div topo-div-type="topo-link" topo-linktype="foldline"
+                                                     draggable="false"
+                                                     onclick="linkBack()">
+                                                    <img class="link-icon-style" id="link-foldline-h"
+                                                         src="static/jtopo/img/foldline_horizontal.png"/>
+                                                    <br><span>折线(横向)</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <div topo-div-type="topo-link" topo-linktype="flexline"
+                                                     draggable="false"
+                                                     onclick="LinkBackTwice()">
+                                                    <img class="link-icon-style" id="link-flexline-h"
+                                                         src="static/jtopo/img/flexline_horizontal.png"/>
+                                                    <br><span>二次折线(横向)</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+    
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">结点</h2>
+                                <div class="layui-colla-content layui-show">
+                                    <table width="100%">
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <div topo-div-type="topo-node" topo-nodetype="RECTANGLE" draggable="true"
+                                                     title="矩形"
+                                                     onclick="addNode()">
+                                                    <img class="node-icon-style" id="node-add"
+                                                         src="static/jtopo/img/node_rectangle.png"/>
+                                                    <br><span>方形结点</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <div topo-div-type="topo-node" topo-nodetype="CIRCLE" draggable="true"
+                                                     title="圆形"
+                                                     onclick="addCircleNode()">
+                                                    <img class="node-icon-style" id="circle-node-add"
+                                                         src="static/jtopo/img/node_circle.png"/>
+                                                    <br><span>圆形结点</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!--
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <div topo-div-type="topo-node" topo-nodetype="TEXT" draggable="true"
+                                                     title="椭圆"
+                                                     onclick="addTextNode()">
+                                                    <img class="node-icon-style" id="text-node-add"
+                                                         src="static/jtopo/img/node_text.png"/>
+                                                    <br><span>文字节点</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md8" id="topoArea">
+                    <canvas id="topology-canvas"></canvas>
+                </div>
+                <div class="layui-col-md1" id="options">
+                    <div class="layui-side-scroll">
+                        <div class="layui-collapse" lay-accordion>
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">属性(选择状态下可用)</h2>
+                                <div class="layui-colla-content layui-show" style="background: #e7e7e7;">
+                                    <table width="100%">
+                                        <!--结点大小-->
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <p>调整大小:</p>
+                                                w:
+                                                <input type="text" style="background-color: #ffffff;width: 50px; height:20px;" id="node-size-w" title="宽">
+                                                h:
+                                                <input type="text" style="background-color: #ffffff;width: 50px; height:20px;" id="node-size-h" title="高">
+                                                <button id="search-btn" onclick="set_node_size();" height="18" width="18">大小</button>
+                                            </td>
+                                        </tr>
+
+                                        <!--箭头粗细-->
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <p>箭头宽度:</p>
+                                                <input type="text" style="background-color: #ffffff;width: 75px; height:20px;" id="arrow-width" title="箭头宽">
+                                                <button id="search-btn" onclick="set_arrow_lineWidth();" height="18" width="18">设置</button>
+                                            </td>
+                                        </tr>
+                                        
+                                        <!--颜色-->
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <p>颜色设定:</p>
+                                                <input type="text" style="background-color: #ffffff;width: 75px; height:20px;" id="node-change-color" title="箭头宽">
+                                                <button id="search-btn" onclick="set_color();" height="18" width="18">设置</button>
+                                            </td>
+                                        </tr>
+                                        
+                                        <!--改变方向-->
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <p>变换方向:</p>
+                                                <button id="search-btn" onclick="set_arrow_side();" height="18" width="18">变换方向</button>
+                                            </td>
+                                        </tr>
+
+                                        <!--属性文字-->
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <p>任务名:</p>
+                                                <input type="text" style="background-color: #ffffff;width: 100px; height:20px;" id="node-arrow-text" title="任务名">
+                                                <button id="search-btn" onclick="set_node_arrow_text();" height="18" width="18">设置</button>
+                                            </td>
+                                        </tr>
+                                        <!--任务时间-->
+                                        <tr>
+                                            <td width="100%" align="center">
+                                                <p>任务时间:</p>
+                                                始:
+                                                <input type="text" style="background-color: #ffffff;width: 50px; height:20px;" id="task-start-time" title="宽">
+                                                终:
+                                                <input type="text" style="background-color: #ffffff;width: 50px; height:20px;" id="task-stop-time" title="高">
+                                                <button id="search-btn" onclick="set_task_during();" height="18" width="18">设置</button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="msg" style="display: none;  width: 800px; height: 600px; position: absolute; top: 150px; left: 40%; line-height: 30px; border-radius: 5px; text-align: center; color: #000;">
+        <textarea id="msgTextArea" style="width:800px;height:600px;">
+    </textarea>
+    
+</body>
+    
+<!-- js of 3rd party  -->
+<script src="static/jquery-3.3.1/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="static/layui-2.3.0/layui.all.js" type="text/javascript"></script>
+<script src="static/toaster/toastr.min.js"></script>
+<script src="static/filesaver/FileSaver.js"></script>
+<!-- js of this project  -->
+<script src="static/jtopo/js/util.js" type="text/javascript"></script>
+   
+<script src="static/jtopo/js/jtopo.js"></script>
+<script src="static/zonedaybi/zdhmi.js"></script>
+    
+<!--关于展示部分的脚本写在js中-->
+<script src="./js/showFunction.js"></script>
+<script src="./js/ui.js"></script>
+</html>
